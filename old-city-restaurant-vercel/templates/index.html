@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Old City Restaurant — Authentic Uzbek Cuisine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #E8D5A3;
+            --dark: #0D0D0D;
+            --darker: #070707;
+            --cream: #F5F0E8;
+            --warm-white: #FAF8F5;
+            --accent-red: #B85450;
+            --text-gray: #8A8A8A;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--darker); color: var(--cream); overflow-x: hidden; }
+        html { scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--dark); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+        /* Flash Messages */
+        .flash-messages { position: fixed; top: 100px; right: 30px; z-index: 9999; }
+        .flash-message {
+            padding: 15px 25px; margin-bottom: 10px; border-radius: 4px;
+            font-size: 0.9rem; font-weight: 500; animation: slideIn 0.5s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .flash-success { background: rgba(76, 175, 80, 0.9); color: white; }
+        .flash-error { background: rgba(184, 84, 80, 0.9); color: white; }
+        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* NAVIGATION */
+        .nav {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            padding: 20px 60px; display: flex; justify-content: space-between; align-items: center;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav.scrolled { background: rgba(7, 7, 7, 0.92); backdrop-filter: blur(20px); padding: 15px 60px; border-bottom: 1px solid rgba(201, 168, 76, 0.1); }
+        .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
+        .nav-logo span { color: var(--cream); font-weight: 400; }
+        .nav-links { display: flex; gap: 40px; list-style: none; }
+        .nav-links a { color: var(--cream); text-decoration: none; font-size: 0.85rem; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; position: relative; padding: 5px 0; transition: color 0.3s; }
+        .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--gold); transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .nav-links a:hover { color: var(--gold); }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-cta { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 10px 28px; font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Inter', sans-serif; text-decoration: none; display: inline-block; }
+        .nav-cta:hover { background: var(--gold); color: var(--dark); }
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--gold); font-size: 1.5rem; cursor: pointer; }
+
+        /* HERO */
+        .hero { position: relative; height: 100vh; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .hero-bg img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.35); transform: scale(1.1); animation: heroZoom 20s ease-in-out infinite alternate; }
+        @keyframes heroZoom { 0% { transform: scale(1.1); } 100% { transform: scale(1.2); } }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(7,7,7,0.3) 0%, rgba(7,7,7,0.1) 40%, rgba(7,7,7,0.6) 80%, rgba(7,7,7,1) 100%); z-index: 2; }
+        .hero-content { position: relative; z-index: 10; text-align: center; max-width: 900px; padding: 0 30px; }
+        .hero-subtitle { font-size: 0.9rem; font-weight: 500; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); margin-bottom: 25px; opacity: 0; transform: translateY(30px); animation: fadeUp 1s 0.3s forwards; }
+        .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 8vw, 6.5rem); font-weight: 900; line-height: 1.05; color: var(--warm-white); margin-bottom: 20px; opacity: 0; transform: translateY(40px); animation: fadeUp 1.2s 0.5s forwards; }
+        .hero-title .gold-text { color: var(--gold); display: block; }
+        .hero-desc { font-size: 1.1rem; font-weight: 300; color: rgba(245, 240, 232, 0.7); line-height: 1.7; max-width: 600px; margin: 0 auto 40px; opacity: 0; transform: translateY(30px); animation: fadeUp 1s 0.8s forwards; }
+        .hero-cta-group { display: flex; gap: 20px; justify-content: center; opacity: 0; transform: translateY(30px); animation: fadeUp 1s 1.1s forwards; }
+        .btn-primary { background: var(--gold); color: var(--dark); padding: 16px 40px; font-size: 0.85rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; border: none; cursor: pointer; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Inter', sans-serif; text-decoration: none; display: inline-block; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(201, 168, 76, 0.3); }
+        .btn-secondary { background: transparent; color: var(--cream); padding: 16px 40px; font-size: 0.85rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; border: 1px solid rgba(245, 240, 232, 0.3); cursor: pointer; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Inter', sans-serif; text-decoration: none; display: inline-block; }
+        .btn-secondary:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-3px); }
+        .scroll-indicator { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; animation: fadeIn 1s 2s forwards; }
+        .scroll-indicator span { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(245, 240, 232, 0.5); }
+        .scroll-line { width: 1px; height: 50px; background: linear-gradient(to bottom, var(--gold), transparent); animation: scrollPulse 2s ease-in-out infinite; }
+        @keyframes scrollPulse { 0%, 100% { opacity: 0.3; transform: scaleY(0.5); } 50% { opacity: 1; transform: scaleY(1); } }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* ABOUT */
+        .about-section { min-height: 100vh; display: flex; align-items: center; padding: 120px 60px; background: var(--darker); overflow: hidden; }
+        .about-container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+        .about-images { position: relative; height: 600px; perspective: 1000px; }
+        .about-img { position: absolute; border-radius: 4px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.5); transition: transform 0.1s ease-out; will-change: transform; }
+        .about-img img { width: 100%; height: 100%; object-fit: cover; }
+        .about-img-1 { width: 65%; height: 70%; top: 0; left: 0; z-index: 3; }
+        .about-img-2 { width: 50%; height: 55%; bottom: 0; right: 0; z-index: 2; }
+        .about-img-3 { width: 40%; height: 45%; top: 15%; right: 5%; z-index: 1; opacity: 0.7; }
+        .about-content { padding-left: 20px; }
+        .section-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
+        .section-label::before { content: ''; width: 40px; height: 1px; background: var(--gold); }
+        .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700; line-height: 1.15; color: var(--warm-white); margin-bottom: 30px; }
+        .section-text { font-size: 1.05rem; font-weight: 300; color: rgba(245, 240, 232, 0.65); line-height: 1.8; margin-bottom: 25px; }
+        .about-stats { display: flex; gap: 50px; margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(201, 168, 76, 0.15); }
+        .stat-item { text-align: left; }
+        .stat-number { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 700; color: var(--gold); line-height: 1; }
+        .stat-label { font-size: 0.8rem; color: rgba(245, 240, 232, 0.5); margin-top: 8px; letter-spacing: 1px; text-transform: uppercase; }
+
+        /* SHOWCASE */
+        .showcase-section { min-height: 100vh; background: var(--dark); padding: 120px 0; overflow: hidden; }
+        .showcase-header { text-align: center; max-width: 700px; margin: 0 auto 80px; padding: 0 30px; }
+        .showcase-header .section-label { justify-content: center; }
+        .showcase-header .section-label::before, .showcase-header .section-label::after { content: ''; width: 40px; height: 1px; background: var(--gold); }
+        .showcase-grid { display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(3, 350px); gap: 15px; padding: 0 60px; max-width: 1600px; margin: 0 auto; }
+        .showcase-item { position: relative; overflow: hidden; border-radius: 4px; cursor: pointer; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .showcase-item:hover { transform: translateY(-10px) rotateX(2deg); }
+        .showcase-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s; filter: brightness(0.85); }
+        .showcase-item:hover img { transform: scale(1.1); filter: brightness(1); }
+        .showcase-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 40px 25px 25px; background: linear-gradient(to top, rgba(7,7,7,0.9) 0%, transparent 100%); z-index: 2; }
+        .showcase-overlay h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--warm-white); margin-bottom: 5px; }
+        .showcase-overlay p { font-size: 0.8rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
+        .showcase-item:nth-child(1) { grid-column: 1 / 5; grid-row: 1; }
+        .showcase-item:nth-child(2) { grid-column: 5 / 9; grid-row: 1; }
+        .showcase-item:nth-child(3) { grid-column: 9 / 13; grid-row: 1 / 3; }
+        .showcase-item:nth-child(4) { grid-column: 1 / 5; grid-row: 2; }
+        .showcase-item:nth-child(5) { grid-column: 5 / 9; grid-row: 2; }
+        .showcase-item:nth-child(6) { grid-column: 1 / 7; grid-row: 3; }
+        .showcase-item:nth-child(7) { grid-column: 7 / 13; grid-row: 3; }
+
+        /* AMBIANCE */
+        .ambiance-section { position: relative; height: 80vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .ambiance-bg { position: absolute; top: -20%; left: 0; width: 100%; height: 140%; z-index: 1; }
+        .ambiance-bg img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.3); }
+        .ambiance-content { position: relative; z-index: 10; text-align: center; max-width: 800px; padding: 0 30px; }
+        .ambiance-content .section-title { font-size: clamp(2rem, 5vw, 3.5rem); }
+        .ambiance-content .section-text { font-size: 1.2rem; color: rgba(245, 240, 232, 0.7); }
+
+        /* MENU HIGHLIGHTS */
+        .menu-section { padding: 120px 60px; background: var(--darker); }
+        .menu-container { max-width: 1400px; margin: 0 auto; }
+        .menu-header { text-align: center; margin-bottom: 80px; }
+        .menu-header .section-label { justify-content: center; }
+        .menu-header .section-label::before, .menu-header .section-label::after { content: ''; width: 40px; height: 1px; background: var(--gold); }
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .menu-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(201, 168, 76, 0.1); border-radius: 8px; overflow: hidden; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); transform-style: preserve-3d; }
+        .menu-card:hover { transform: translateY(-15px) rotateX(5deg); border-color: rgba(201, 168, 76, 0.3); box-shadow: 0 30px 60px rgba(0,0,0,0.4); }
+        .menu-card-img { height: 280px; overflow: hidden; position: relative; }
+        .menu-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .menu-card:hover .menu-card-img img { transform: scale(1.15); }
+        .menu-card-body { padding: 30px; }
+        .menu-card-body h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--warm-white); margin-bottom: 10px; }
+        .menu-card-body p { font-size: 0.9rem; color: rgba(245, 240, 232, 0.6); line-height: 1.6; margin-bottom: 20px; }
+        .menu-card-price { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--gold); font-weight: 600; }
+
+        /* EXPERIENCE */
+        .experience-section { padding: 120px 0; background: var(--dark); overflow: hidden; }
+        .experience-header { text-align: center; margin-bottom: 60px; padding: 0 60px; }
+        .experience-header .section-label { justify-content: center; }
+        .experience-header .section-label::before, .experience-header .section-label::after { content: ''; width: 40px; height: 1px; background: var(--gold); }
+        .experience-track { display: flex; gap: 30px; padding: 0 60px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 30px; }
+        .experience-track::-webkit-scrollbar { display: none; }
+        .experience-card { flex: 0 0 400px; height: 500px; position: relative; border-radius: 8px; overflow: hidden; scroll-snap-align: start; cursor: grab; }
+        .experience-card:active { cursor: grabbing; }
+        .experience-card img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); transition: filter 0.5s, transform 0.8s; }
+        .experience-card:hover img { filter: brightness(0.9); transform: scale(1.05); }
+        .experience-card-content { position: absolute; bottom: 0; left: 0; width: 100%; padding: 40px 30px; background: linear-gradient(to top, rgba(7,7,7,0.95) 0%, transparent 100%); }
+        .experience-card-content h3 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--warm-white); margin-bottom: 8px; }
+        .experience-card-content p { font-size: 0.85rem; color: rgba(245, 240, 232, 0.6); line-height: 1.5; }
+
+        /* REVIEWS */
+        .reviews-section { padding: 120px 60px; background: var(--darker); }
+        .reviews-container { max-width: 1200px; margin: 0 auto; }
+        .reviews-header { text-align: center; margin-bottom: 60px; }
+        .reviews-header .section-label { justify-content: center; }
+        .reviews-header .section-label::before, .reviews-header .section-label::after { content: ''; width: 40px; height: 1px; background: var(--gold); }
+        .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .review-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(201, 168, 76, 0.1); border-radius: 8px; padding: 30px; transition: all 0.4s; }
+        .review-card:hover { border-color: rgba(201, 168, 76, 0.3); transform: translateY(-5px); }
+        .review-stars { color: var(--gold); margin-bottom: 15px; font-size: 1rem; }
+        .review-text { font-size: 0.95rem; color: rgba(245, 240, 232, 0.7); line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+        .review-author { font-weight: 600; color: var(--warm-white); font-size: 0.9rem; }
+        .review-date { font-size: 0.75rem; color: rgba(245, 240, 232, 0.4); margin-top: 5px; }
+
+        /* REVIEW FORM */
+        .review-form-section { padding: 80px 60px; background: var(--dark); }
+        .review-form-container { max-width: 600px; margin: 0 auto; }
+        .review-form { display: flex; flex-direction: column; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+        .form-group input, .form-group textarea, .form-group select {
+            padding: 15px; background: rgba(255,255,255,0.03); border: 1px solid rgba(201, 168, 76, 0.15);
+            color: var(--cream); font-family: 'Inter', sans-serif; font-size: 1rem;
+            transition: all 0.3s; border-radius: 4px;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none; border-color: var(--gold); background: rgba(255,255,255,0.05);
+        }
+        .form-group textarea { min-height: 120px; resize: vertical; }
+        .star-rating { display: flex; gap: 10px; }
+        .star-rating input { display: none; }
+        .star-rating label { font-size: 1.8rem; color: rgba(201, 168, 76, 0.3); cursor: pointer; transition: color 0.2s; }
+        .star-rating label:hover, .star-rating label:hover ~ label, .star-rating input:checked ~ label { color: var(--gold); }
+
+        /* CONTACT */
+        .contact-section { padding: 120px 60px; background: linear-gradient(180deg, var(--dark) 0%, var(--darker) 100%); }
+        .contact-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+        .contact-info h2 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); color: var(--warm-white); margin-bottom: 20px; }
+        .contact-info > p { font-size: 1rem; color: rgba(245, 240, 232, 0.6); line-height: 1.7; margin-bottom: 40px; }
+        .contact-item { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 30px; padding: 20px; background: rgba(255,255,255,0.02); border: 1px solid rgba(201, 168, 76, 0.1); border-radius: 8px; transition: all 0.4s; }
+        .contact-item:hover { border-color: rgba(201, 168, 76, 0.3); transform: translateX(10px); }
+        .contact-icon { width: 50px; height: 50px; background: rgba(201, 168, 76, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+        .contact-item h4 { font-size: 0.85rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 5px; }
+        .contact-item p, .contact-item a { font-size: 1rem; color: rgba(245, 240, 232, 0.8); text-decoration: none; transition: color 0.3s; }
+        .contact-item a:hover { color: var(--gold); }
+        .contact-social { display: flex; gap: 15px; margin-top: 30px; }
+        .social-btn { width: 50px; height: 50px; border: 1px solid rgba(201, 168, 76, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 1.1rem; text-decoration: none; transition: all 0.4s; background: transparent; cursor: pointer; }
+        .social-btn:hover { background: var(--gold); color: var(--dark); transform: translateY(-5px); border-color: var(--gold); }
+        .contact-map { position: relative; height: 500px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(201, 168, 76, 0.1); }
+        .contact-map iframe { width: 100%; height: 100%; border: none; filter: grayscale(0.3) brightness(0.8); }
+
+        /* FOOTER */
+        .footer { padding: 60px; background: var(--darker); border-top: 1px solid rgba(201, 168, 76, 0.1); text-align: center; }
+        .footer-logo { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--gold); letter-spacing: 3px; margin-bottom: 20px; }
+        .footer-logo span { color: var(--cream); font-weight: 400; }
+        .footer p { font-size: 0.85rem; color: rgba(245, 240, 232, 0.4); letter-spacing: 1px; }
+        .footer-links { display: flex; justify-content: center; gap: 30px; margin-top: 20px; }
+        .footer-links a { color: rgba(245, 240, 232, 0.5); text-decoration: none; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--gold); }
+
+        /* ANIMATIONS */
+        .reveal { opacity: 0; transform: translateY(60px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .reveal-left { opacity: 0; transform: translateX(-80px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal-left.active { opacity: 1; transform: translateX(0); }
+        .reveal-right { opacity: 0; transform: translateX(80px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal-right.active { opacity: 1; transform: translateX(0); }
+        .reveal-scale { opacity: 0; transform: scale(0.8); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal-scale.active { opacity: 1; transform: scale(1); }
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.2s; }
+        .stagger-3 { transition-delay: 0.3s; }
+        .stagger-4 { transition-delay: 0.4s; }
+        .stagger-5 { transition-delay: 0.5s; }
+        .stagger-6 { transition-delay: 0.6s; }
+        .stagger-7 { transition-delay: 0.7s; }
+        .parallax-img { will-change: transform; }
+
+        /* MOBILE */
+        @media (max-width: 1024px) {
+            .about-container, .contact-container { grid-template-columns: 1fr; gap: 60px; }
+            .menu-grid, .reviews-grid { grid-template-columns: repeat(2, 1fr); }
+            .showcase-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, 300px); }
+            .showcase-item:nth-child(1) { grid-column: 1; grid-row: 1; }
+            .showcase-item:nth-child(2) { grid-column: 2; grid-row: 1; }
+            .showcase-item:nth-child(3) { grid-column: 1 / 3; grid-row: 2; }
+            .showcase-item:nth-child(4) { grid-column: 1; grid-row: 3; }
+            .showcase-item:nth-child(5) { grid-column: 2; grid-row: 3; }
+            .showcase-item:nth-child(6) { grid-column: 1 / 3; grid-row: 4; }
+            .showcase-item:nth-child(7) { grid-column: 1 / 3; grid-row: 5; }
+        }
+        @media (max-width: 768px) {
+            .nav { padding: 15px 25px; }
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .hero-cta-group { flex-direction: column; align-items: center; }
+            .about-section, .menu-section, .contact-section, .reviews-section, .review-form-section { padding: 80px 25px; }
+            .about-images { height: 400px; }
+            .menu-grid, .reviews-grid { grid-template-columns: 1fr; }
+            .showcase-grid { grid-template-columns: 1fr; grid-template-rows: repeat(7, 280px); padding: 0 25px; }
+            .showcase-item:nth-child(n) { grid-column: 1; }
+            .showcase-item:nth-child(1) { grid-row: 1; }
+            .showcase-item:nth-child(2) { grid-row: 2; }
+            .showcase-item:nth-child(3) { grid-row: 3; }
+            .showcase-item:nth-child(4) { grid-row: 4; }
+            .showcase-item:nth-child(5) { grid-row: 5; }
+            .showcase-item:nth-child(6) { grid-row: 6; }
+            .showcase-item:nth-child(7) { grid-row: 7; }
+            .experience-card { flex: 0 0 300px; height: 400px; }
+            .about-stats { flex-wrap: wrap; gap: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="flash-message flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- NAVIGATION -->
+<nav class="nav" id="navbar">
+    <div class="nav-logo">Old City <span>Restaurant</span></div>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('menu') }}">Menu</a></li>
+        <li><a href="{{ url_for('reservation') }}">Reservation</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="{{ url_for('reservation') }}" class="nav-cta">Reserve Table</a>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-bg">
+        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80" alt="Old City Restaurant">
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <p class="hero-subtitle">Authentic Uzbek Cuisine</p>
+        <h1 class="hero-title">Taste the Soul<br><span class="gold-text">of Uzbekistan</span></h1>
+        <p class="hero-desc">Step into a world where centuries-old recipes meet warm hospitality. Experience the rich flavors of traditional Uzbek cuisine in the heart of the city.</p>
+        <div class="hero-cta-group">
+            <a href="{{ url_for('menu') }}" class="btn-primary">Explore Menu</a>
+            <a href="#contact" class="btn-secondary">Find Us</a>
+        </div>
+    </div>
+    <div class="scroll-indicator">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+    <div class="about-container">
+        <div class="about-images">
+            <div class="about-img about-img-1 parallax-img" data-speed="0.05">
+                <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80" alt="Interior">
+            </div>
+            <div class="about-img about-img-2 parallax-img" data-speed="-0.03">
+                <img src="https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?w=800&q=80" alt="Decor">
+            </div>
+            <div class="about-img about-img-3 parallax-img" data-speed="0.08">
+                <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80" alt="Dining">
+            </div>
+        </div>
+        <div class="about-content">
+            <div class="section-label reveal">Our Story</div>
+            <h2 class="section-title reveal">Where Tradition<br>Meets <span style="color:var(--gold)">Excellence</span></h2>
+            <p class="section-text reveal">Old City Restaurant is more than a dining destination — it's a journey through the rich culinary heritage of Uzbekistan. Our chefs craft each dish with authentic recipes passed down through generations.</p>
+            <p class="section-text reveal stagger-1">From our signature Plov cooked in a traditional kazan to hand-pulled Lagman noodles and freshly baked Samsa, every bite tells a story.</p>
+            <div class="about-stats reveal stagger-2">
+                <div class="stat-item"><div class="stat-number">15+</div><div class="stat-label">Years Experience</div></div>
+                <div class="stat-item"><div class="stat-number">50+</div><div class="stat-label">Signature Dishes</div></div>
+                <div class="stat-item"><div class="stat-number">10K+</div><div class="stat-label">Happy Guests</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SHOWCASE -->
+<section class="showcase-section" id="showcase">
+    <div class="showcase-header">
+        <div class="section-label reveal">Visual Journey</div>
+        <h2 class="section-title reveal">A Feast for the <span style="color:var(--gold)">Eyes</span></h2>
+    </div>
+    <div class="showcase-grid">
+        <div class="showcase-item reveal-scale stagger-1">
+            <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=800&q=80" alt="Plov">
+            <div class="showcase-overlay"><h3>Traditional Plov</h3><p>Signature Dish</p></div>
+        </div>
+        <div class="showcase-item reveal-scale stagger-2">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80" alt="Meat">
+            <div class="showcase-overlay"><h3>Plov with Tender Meat</h3><p>Chef's Special</p></div>
+        </div>
+        <div class="showcase-item reveal-scale stagger-3">
+            <img src="https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=800&q=80" alt="Interior">
+            <div class="showcase-overlay"><h3>Elegant Interior</h3><p>Ambiance</p></div>
+        </div>
+        <div class="showcase-item reveal-scale stagger-4">
+            <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=80" alt="Lagman">
+            <div class="showcase-overlay"><h3>Lagman Noodles</h3><p>Hand-Pulled</p></div>
+        </div>
+        <div class="showcase-item reveal-scale stagger-5">
+            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80" alt="Exterior">
+            <div class="showcase-overlay"><h3>The Old House</h3><p>Historic Location</p></div>
+        </div>
+        <div class="showcase-item reveal-scale stagger-6">
+            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80" alt="Grilled">
+            <div class="showcase-overlay"><h3>Grilled Lamb</h3><p>Fresh & Juicy</p></div>
+        </div>
+        <div class="showcase-item reveal-scale stagger-7">
+            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80" alt="Samsa">
+            <div class="showcase-overlay"><h3>Golden Samsa</h3><p>Fresh Baked</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- AMBIANCE -->
+<section class="ambiance-section">
+    <div class="ambiance-bg parallax-img" data-speed="0.15">
+        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80" alt="Ambiance">
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="ambiance-content">
+        <div class="section-label reveal" style="justify-content:center;">
+            <span style="width:40px;height:1px;background:var(--gold);display:inline-block;margin-right:15px;"></span>
+            Atmosphere
+            <span style="width:40px;height:1px;background:var(--gold);display:inline-block;margin-left:15px;"></span>
+        </div>
+        <h2 class="section-title reveal">Feel the Warmth of<br><span style="color:var(--gold)">Uzbek Hospitality</span></h2>
+        <p class="section-text reveal stagger-1">Our beautifully decorated interior features traditional Suzani embroidery, warm lighting, and comfortable seating that transports you to the heart of ancient Bukhara.</p>
+    </div>
+</section>
+
+<!-- MENU HIGHLIGHTS -->
+<section class="menu-section" id="menu-highlights">
+    <div class="menu-container">
+        <div class="menu-header">
+            <div class="section-label reveal">Culinary Delights</div>
+            <h2 class="section-title reveal">Signature <span style="color:var(--gold)">Dishes</span></h2>
+        </div>
+        <div class="menu-grid">
+            {% for item in specials %}
+            <div class="menu-card reveal stagger-{{ loop.index }}">
+                <div class="menu-card-img">
+                    <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item.name }}" onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80'">
+                </div>
+                <div class="menu-card-body">
+                    <h3>{{ item.name }}</h3>
+                    <p>{{ item.description }}</p>
+                    <div class="menu-card-price">${{ "%.2f"|format(item.price) }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div style="text-align:center; margin-top:50px;">
+            <a href="{{ url_for('menu') }}" class="btn-primary">View Full Menu</a>
+        </div>
+    </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section class="experience-section" id="experience">
+    <div class="experience-header">
+        <div class="section-label reveal">The Experience</div>
+        <h2 class="section-title reveal">Every Moment <span style="color:var(--gold)">Matters</span></h2>
+    </div>
+    <div class="experience-track" id="experienceTrack">
+        <div class="experience-card reveal stagger-1">
+            <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=80" alt="Interior">
+            <div class="experience-card-content"><h3>Traditional Interior</h3><p>Authentic decorations and warm ambiance create an unforgettable dining atmosphere.</p></div>
+        </div>
+        <div class="experience-card reveal stagger-2">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80" alt="Fresh Plov">
+            <div class="experience-card-content"><h3>Fresh Plov</h3><p>Our signature rice dish prepared daily with the finest ingredients and traditional methods.</p></div>
+        </div>
+        <div class="experience-card reveal stagger-3">
+            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80" alt="Salads">
+            <div class="experience-card-content"><h3>Fresh Salads</h3><p>Colorful, healthy salads made with locally sourced vegetables and house dressings.</p></div>
+        </div>
+        <div class="experience-card reveal stagger-4">
+            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80" alt="Private">
+            <div class="experience-card-content"><h3>Private Dining</h3><p>Perfect for celebrations, family gatherings, and special occasions with personalized service.</p></div>
+        </div>
+        <div class="experience-card reveal stagger-5">
+            <img src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&q=80" alt="Bar">
+            <div class="experience-card-content"><h3>Full Bar</h3><p>Curated selection of wines, spirits, and traditional beverages to complement your meal.</p></div>
+        </div>
+        <div class="experience-card reveal stagger-6">
+            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80" alt="Exterior">
+            <div class="experience-card-content"><h3>Charming Exterior</h3><p>Beautiful facade that welcomes you to an evening of exceptional food and hospitality.</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews-section" id="reviews">
+    <div class="reviews-container">
+        <div class="reviews-header">
+            <div class="section-label reveal">Guest Love</div>
+            <h2 class="section-title reveal">What Our Guests <span style="color:var(--gold)">Say</span></h2>
+        </div>
+        <div class="reviews-grid">
+            {% for review in reviews %}
+            <div class="review-card reveal stagger-{{ loop.index }}">
+                <div class="review-stars">{{ "★" * review.rating }}{{ "☆" * (5 - review.rating) }}</div>
+                <p class="review-text">"{{ review.comment }}"</p>
+                <div class="review-author">{{ review.name }}</div>
+                <div class="review-date">{{ review.created_at }}</div>
+            </div>
+            {% else %}
+            <div class="review-card reveal stagger-1">
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"The best plov I've ever had outside of Uzbekistan! The atmosphere is magical and the staff treated us like family."</p>
+                <div class="review-author">Sarah M.</div>
+                <div class="review-date">Tourist from UK</div>
+            </div>
+            <div class="review-card reveal stagger-2">
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"An unforgettable dining experience. The lagman noodles were hand-pulled to perfection. A must-visit in Tashkent!"</p>
+                <div class="review-author">Marco R.</div>
+                <div class="review-date">Tourist from Italy</div>
+            </div>
+            <div class="review-card reveal stagger-3">
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"We celebrated our anniversary here and it was perfect. The samsa was incredible and the service was impeccable."</p>
+                <div class="review-author">Elena K.</div>
+                <div class="review-date">Tourist from Russia</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- REVIEW FORM -->
+<section class="review-form-section">
+    <div class="review-form-container">
+        <div class="reviews-header" style="margin-bottom:40px;">
+            <div class="section-label reveal" style="justify-content:center;">
+                <span style="width:40px;height:1px;background:var(--gold);display:inline-block;margin-right:15px;"></span>
+                Share Your Experience
+                <span style="width:40px;height:1px;background:var(--gold);display:inline-block;margin-left:15px;"></span>
+            </div>
+            <h2 class="section-title reveal" style="text-align:center;">Leave a <span style="color:var(--gold)">Review</span></h2>
+        </div>
+        <form class="review-form" action="{{ url_for('submit_review') }}" method="POST">
+            <div class="form-group">
+                <label>Your Name</label>
+                <input type="text" name="name" required placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+                <label>Rating</label>
+                <div class="star-rating">
+                    <input type="radio" name="rating" id="star5" value="5" required><label for="star5">★</label>
+                    <input type="radio" name="rating" id="star4" value="4"><label for="star4">★</label>
+                    <input type="radio" name="rating" id="star3" value="3"><label for="star3">★</label>
+                    <input type="radio" name="rating" id="star2" value="2"><label for="star2">★</label>
+                    <input type="radio" name="rating" id="star1" value="1"><label for="star1">★</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Your Review</label>
+                <textarea name="comment" required placeholder="Tell us about your experience..."></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%;">Submit Review</button>
+        </form>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+    <div class="contact-container">
+        <div class="contact-info">
+            <h2 class="reveal">Visit <span style="color:var(--gold)">Us</span></h2>
+            <p class="reveal stagger-1">Ready to experience authentic Uzbek cuisine? We're here to welcome you. Reach out for reservations, inquiries, or just to say hello!</p>
+
+            <div class="contact-item reveal stagger-2">
+                <div class="contact-icon">📍</div>
+                <div><h4>Location</h4><p>Old City Restaurant, Tashkent, Uzbekistan<br>(Add your exact address here)</p></div>
+            </div>
+            <div class="contact-item reveal stagger-3">
+                <div class="contact-icon">📞</div>
+                <div><h4>Phone</h4><a href="tel:+998XXXXXXXXX">+998 (XX) XXX-XX-XX</a></div>
+            </div>
+            <div class="contact-item reveal stagger-4">
+                <div class="contact-icon">✈️</div>
+                <div><h4>Telegram</h4><a href="https://t.me/your_telegram_handle" target="_blank">@your_telegram_handle</a></div>
+            </div>
+            <div class="contact-item reveal stagger-5">
+                <div class="contact-icon">📷</div>
+                <div><h4>Instagram</h4><a href="https://instagram.com/your_instagram_handle" target="_blank">@your_instagram_handle</a></div>
+            </div>
+
+            <div class="contact-social reveal stagger-6">
+                <a href="https://t.me/your_telegram_handle" target="_blank" class="social-btn" title="Telegram"><i class="fab fa-telegram"></i></a>
+                <a href="https://instagram.com/your_instagram_handle" target="_blank" class="social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="tel:+998XXXXXXXXX" class="social-btn" title="Call Us"><i class="fas fa-phone"></i></a>
+                <a href="https://maps.google.com/?q=Old+City+Restaurant+Tashkent" target="_blank" class="social-btn" title="Location"><i class="fas fa-map-marker-alt"></i></a>
+            </div>
+        </div>
+        <div class="contact-map reveal-right">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2996.8!2d69.24!3d41.31!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDE4JzM2LjAiTiA2OcKwMTQnMjQuMCJF!5e0!3m2!1sen!2s!4v1" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-logo">Old City <span>Restaurant</span></div>
+    <p>© 2026 Old City Restaurant. All rights reserved. Crafted with ❤️ for food lovers.</p>
+    <div class="footer-links">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('menu') }}">Menu</a>
+        <a href="{{ url_for('reservation') }}">Reservation</a>
+        <a href="{{ url_for('admin_login') }}">Admin</a>
+    </div>
+</footer>
+
+<script>
+    // Navbar scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 100);
+    });
+
+    // Scroll reveal
+    const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+    }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // Parallax
+    const parallaxImages = document.querySelectorAll('.parallax-img');
+    window.addEventListener('scroll', () => {
+        parallaxImages.forEach(img => {
+            const speed = parseFloat(img.dataset.speed) || 0.05;
+            const rect = img.getBoundingClientRect();
+            const centerY = rect.top + rect.height / 2;
+            const viewportCenter = window.innerHeight / 2;
+            const distance = (centerY - viewportCenter) * speed;
+            img.style.transform = `translateY(${distance}px)`;
+        });
+    });
+
+    // About images 3D tilt
+    const aboutImages = document.querySelector('.about-images');
+    if (aboutImages) {
+        aboutImages.addEventListener('mousemove', (e) => {
+            const rect = aboutImages.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            aboutImages.querySelectorAll('.about-img').forEach((img, i) => {
+                const factor = (i + 1) * 3;
+                img.style.transform = `translateY(${y * factor}px) translateX(${x * factor}px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg)`;
+            });
+        });
+        aboutImages.addEventListener('mouseleave', () => {
+            aboutImages.querySelectorAll('.about-img').forEach(img => {
+                img.style.transform = 'translateY(0) translateX(0) rotateY(0) rotateX(0)';
+            });
+        });
+    }
+
+    // Horizontal drag scroll
+    const track = document.getElementById('experienceTrack');
+    let isDown = false, startX, scrollLeft;
+    track.addEventListener('mousedown', (e) => { isDown = true; track.style.cursor = 'grabbing'; startX = e.pageX - track.offsetLeft; scrollLeft = track.scrollLeft; });
+    track.addEventListener('mouseleave', () => { isDown = false; track.style.cursor = 'grab'; });
+    track.addEventListener('mouseup', () => { isDown = false; track.style.cursor = 'grab'; });
+    track.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - track.offsetLeft; const walk = (x - startX) * 2; track.scrollLeft = scrollLeft - walk; });
+
+    // Showcase 3D hover
+    document.querySelectorAll('.showcase-item').forEach(item => {
+        item.addEventListener('mousemove', (e) => {
+            const rect = item.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            item.style.transform = `translateY(-10px) rotateX(${-y * 8}deg) rotateY(${x * 8}deg) scale(1.02)`;
+        });
+        item.addEventListener('mouseleave', () => { item.style.transform = 'translateY(0) rotateX(0) rotateY(0) scale(1)'; });
+    });
+
+    // Menu card 3D tilt
+    document.querySelectorAll('.menu-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            card.style.transform = `translateY(-15px) rotateX(${-y * 10}deg) rotateY(${x * 10}deg)`;
+        });
+        card.addEventListener('mouseleave', () => { card.style.transform = 'translateY(0) rotateX(0) rotateY(0)'; });
+    });
+
+    // Mobile menu toggle
+    function toggleMobileMenu() {
+        const navLinks = document.getElementById('navLinks');
+        navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        navLinks.style.position = 'absolute';
+        navLinks.style.top = '70px';
+        navLinks.style.left = '0';
+        navLinks.style.right = '0';
+        navLinks.style.flexDirection = 'column';
+        navLinks.style.background = 'rgba(7,7,7,0.95)';
+        navLinks.style.padding = '20px';
+        navLinks.style.gap = '20px';
+    }
+
+    // Flash message auto-hide
+    setTimeout(() => {
+        document.querySelectorAll('.flash-message').forEach(msg => {
+            msg.style.transition = 'opacity 0.5s';
+            msg.style.opacity = '0';
+            setTimeout(() => msg.remove(), 500);
+        });
+    }, 5000);
+</script>
+
+</body>
+</html>
