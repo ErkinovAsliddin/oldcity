@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact — Old City Restaurant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #E8D5A3;
+            --dark: #0D0D0D;
+            --darker: #070707;
+            --cream: #F5F0E8;
+            --warm-white: #FAF8F5;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--darker); color: var(--cream); }
+
+        /* NAV */
+        .nav {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            padding: 20px 60px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(7, 7, 7, 0.95); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+        }
+        .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; text-decoration: none; }
+        .nav-logo span { color: var(--cream); font-weight: 400; }
+        .nav-links { display: flex; gap: 40px; list-style: none; }
+        .nav-links a { color: var(--cream); text-decoration: none; font-size: 0.85rem; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--gold); }
+        .nav-cta { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 10px 28px; font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: all 0.4s; }
+        .nav-cta:hover { background: var(--gold); color: var(--dark); }
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--gold); font-size: 1.5rem; cursor: pointer; }
+
+        /* PAGE HEADER */
+        .page-header {
+            padding: 150px 60px 80px; text-align: center;
+            background: linear-gradient(180deg, var(--dark) 0%, var(--darker) 100%);
+        }
+        .page-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .page-label::before, .page-label::after { content: ''; width: 40px; height: 1px; background: var(--gold); }
+        .page-title { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700; color: var(--warm-white); margin-bottom: 20px; }
+        .page-desc { font-size: 1.1rem; color: rgba(245, 240, 232, 0.6); max-width: 600px; margin: 0 auto; }
+
+        /* CONTACT SECTION */
+        .contact-section { padding: 0 60px 120px; background: var(--darker); }
+        .contact-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+        .contact-info h2 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); color: var(--warm-white); margin-bottom: 20px; }
+        .contact-info > p { font-size: 1rem; color: rgba(245, 240, 232, 0.6); line-height: 1.7; margin-bottom: 40px; }
+        .contact-item { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 30px; padding: 20px; background: rgba(255,255,255,0.02); border: 1px solid rgba(201, 168, 76, 0.1); border-radius: 8px; transition: all 0.4s; }
+        .contact-item:hover { border-color: rgba(201, 168, 76, 0.3); transform: translateX(10px); }
+        .contact-icon { width: 50px; height: 50px; background: rgba(201, 168, 76, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+        .contact-item h4 { font-size: 0.85rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 5px; }
+        .contact-item p, .contact-item a { font-size: 1rem; color: rgba(245, 240, 232, 0.8); text-decoration: none; transition: color 0.3s; }
+        .contact-item a:hover { color: var(--gold); }
+        .contact-social { display: flex; gap: 15px; margin-top: 30px; }
+        .social-btn { width: 50px; height: 50px; border: 1px solid rgba(201, 168, 76, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 1.1rem; text-decoration: none; transition: all 0.4s; background: transparent; cursor: pointer; }
+        .social-btn:hover { background: var(--gold); color: var(--dark); transform: translateY(-5px); border-color: var(--gold); }
+        .contact-map { position: relative; height: 500px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(201, 168, 76, 0.1); }
+        .contact-map iframe { width: 100%; height: 100%; border: none; filter: grayscale(0.3) brightness(0.8); }
+
+        /* FOOTER */
+        .footer { padding: 60px; background: var(--darker); border-top: 1px solid rgba(201, 168, 76, 0.1); text-align: center; }
+        .footer-logo { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--gold); letter-spacing: 3px; margin-bottom: 20px; }
+        .footer-logo span { color: var(--cream); font-weight: 400; }
+        .footer p { font-size: 0.85rem; color: rgba(245, 240, 232, 0.4); }
+        .footer-links { display: flex; justify-content: center; gap: 30px; margin-top: 20px; }
+        .footer-links a { color: rgba(245, 240, 232, 0.5); text-decoration: none; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; }
+        .footer-links a:hover { color: var(--gold); }
+
+        @media (max-width: 1024px) { .contact-container { grid-template-columns: 1fr; gap: 60px; } }
+        @media (max-width: 768px) {
+            .nav { padding: 15px 25px; }
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .page-header { padding: 120px 25px 60px; }
+            .contact-section { padding: 0 25px 80px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="nav">
+    <a href="{{ url_for('home') }}" class="nav-logo">Old City <span>Restaurant</span></a>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('menu') }}">Menu</a></li>
+        <li><a href="{{ url_for('reservation') }}">Reservation</a></li>
+        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+    </ul>
+    <a href="{{ url_for('reservation') }}" class="nav-cta">Reserve Table</a>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+</nav>
+
+<!-- PAGE HEADER -->
+<section class="page-header">
+    <div class="page-label">Get in Touch</div>
+    <h1 class="page-title">Contact <span style="color:var(--gold)">Us</span></h1>
+    <p class="page-desc">We'd love to hear from you. Reach out for reservations, inquiries, or just to say hello!</p>
+</section>
+
+<!-- CONTACT SECTION -->
+<section class="contact-section">
+    <div class="contact-container">
+        <div class="contact-info">
+            <h2>Visit <span style="color:var(--gold)">Us</span></h2>
+            <p>Ready to experience authentic Uzbek cuisine? We're here to welcome you.</p>
+
+            <div class="contact-item">
+                <div class="contact-icon">📍</div>
+                <div><h4>Location</h4><p>Old City Restaurant, Tashkent, Uzbekistan<br>(Add your exact address here)</p></div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">📞</div>
+                <div><h4>Phone</h4><a href="tel:+998XXXXXXXXX">+998 (XX) XXX-XX-XX</a></div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">✈️</div>
+                <div><h4>Telegram</h4><a href="https://t.me/your_telegram_handle" target="_blank">@your_telegram_handle</a></div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">📷</div>
+                <div><h4>Instagram</h4><a href="https://instagram.com/your_instagram_handle" target="_blank">@your_instagram_handle</a></div>
+            </div>
+
+            <div class="contact-social">
+                <a href="https://t.me/your_telegram_handle" target="_blank" class="social-btn" title="Telegram"><i class="fab fa-telegram"></i></a>
+                <a href="https://instagram.com/your_instagram_handle" target="_blank" class="social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="tel:+998XXXXXXXXX" class="social-btn" title="Call Us"><i class="fas fa-phone"></i></a>
+                <a href="https://maps.google.com/?q=Old+City+Restaurant+Tashkent" target="_blank" class="social-btn" title="Location"><i class="fas fa-map-marker-alt"></i></a>
+            </div>
+        </div>
+        <div class="contact-map">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2996.8!2d69.24!3d41.31!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDE4JzM2LjAiTiA2OcKwMTQnMjQuMCJF!5e0!3m2!1sen!2s!4v1" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-logo">Old City <span>Restaurant</span></div>
+    <p>© 2026 Old City Restaurant. All rights reserved.</p>
+    <div class="footer-links">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('menu') }}">Menu</a>
+        <a href="{{ url_for('reservation') }}">Reservation</a>
+        <a href="{{ url_for('admin_login') }}">Admin</a>
+    </div>
+</footer>
+
+<script>
+    function toggleMobileMenu() {
+        const navLinks = document.getElementById('navLinks');
+        navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        navLinks.style.position = 'absolute';
+        navLinks.style.top = '70px';
+        navLinks.style.left = '0';
+        navLinks.style.right = '0';
+        navLinks.style.flexDirection = 'column';
+        navLinks.style.background = 'rgba(7,7,7,0.95)';
+        navLinks.style.padding = '20px';
+        navLinks.style.gap = '20px';
+    }
+</script>
+
+</body>
+</html>
