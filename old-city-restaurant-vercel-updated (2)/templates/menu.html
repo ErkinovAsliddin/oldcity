@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu — Old City Restaurant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #E8D5A3;
+            --dark: #0D0D0D;
+            --darker: #070707;
+            --cream: #F5F0E8;
+            --warm-white: #FAF8F5;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--darker); color: var(--cream); }
+
+        /* NAV */
+        .nav {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            padding: 20px 60px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(7, 7, 7, 0.95); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+        }
+        .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; text-decoration: none; }
+        .nav-logo span { color: var(--cream); font-weight: 400; }
+        .nav-links { display: flex; gap: 40px; list-style: none; }
+        .nav-links a { color: var(--cream); text-decoration: none; font-size: 0.85rem; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--gold); }
+        .nav-cta { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 10px 28px; font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: all 0.4s; }
+        .nav-cta:hover { background: var(--gold); color: var(--dark); }
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--gold); font-size: 1.5rem; cursor: pointer; }
+
+        /* PAGE HEADER */
+        .page-header {
+            padding: 150px 60px 80px; text-align: center;
+            background: linear-gradient(180deg, var(--dark) 0%, var(--darker) 100%);
+        }
+        .page-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .page-label::before, .page-label::after { content: ''; width: 40px; height: 1px; background: var(--gold); }
+        .page-title { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700; color: var(--warm-white); margin-bottom: 20px; }
+        .page-desc { font-size: 1.1rem; color: rgba(245, 240, 232, 0.6); max-width: 600px; margin: 0 auto; }
+
+        /* CATEGORY FILTER */
+        .category-filter {
+            display: flex; justify-content: center; gap: 15px; padding: 40px 60px;
+            flex-wrap: wrap; background: var(--darker);
+        }
+        .filter-btn {
+            padding: 10px 25px; background: transparent; border: 1px solid rgba(201, 168, 76, 0.2);
+            color: var(--cream); font-family: 'Inter', sans-serif; font-size: 0.85rem;
+            letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+            transition: all 0.3s; border-radius: 4px;
+        }
+        .filter-btn:hover, .filter-btn.active { background: var(--gold); color: var(--dark); border-color: var(--gold); }
+
+        /* MENU GRID */
+        .menu-section { padding: 0 60px 120px; background: var(--darker); }
+        .menu-container { max-width: 1400px; margin: 0 auto; }
+        .menu-category { margin-bottom: 60px; }
+        .category-title {
+            font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold);
+            margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+        }
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .menu-card {
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(201, 168, 76, 0.1);
+            border-radius: 8px; overflow: hidden; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .menu-card:hover { transform: translateY(-10px); border-color: rgba(201, 168, 76, 0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .menu-card-img { height: 250px; overflow: hidden; }
+        .menu-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; }
+        .menu-card:hover .menu-card-img img { transform: scale(1.1); }
+        .menu-card-body { padding: 25px; }
+        .menu-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .menu-card-header h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--warm-white); }
+        .menu-card-price { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--gold); font-weight: 600; }
+        .menu-card-body p { font-size: 0.9rem; color: rgba(245, 240, 232, 0.6); line-height: 1.6; }
+        .menu-card-badge {
+            display: inline-block; padding: 4px 12px; background: var(--gold); color: var(--dark);
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+            border-radius: 2px; margin-top: 15px;
+        }
+
+        /* FOOTER */
+        .footer { padding: 60px; background: var(--darker); border-top: 1px solid rgba(201, 168, 76, 0.1); text-align: center; }
+        .footer-logo { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--gold); letter-spacing: 3px; margin-bottom: 20px; }
+        .footer-logo span { color: var(--cream); font-weight: 400; }
+        .footer p { font-size: 0.85rem; color: rgba(245, 240, 232, 0.4); }
+        .footer-links { display: flex; justify-content: center; gap: 30px; margin-top: 20px; }
+        .footer-links a { color: rgba(245, 240, 232, 0.5); text-decoration: none; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; }
+        .footer-links a:hover { color: var(--gold); }
+
+        @media (max-width: 1024px) { .menu-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) {
+            .nav { padding: 15px 25px; }
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .page-header { padding: 120px 25px 60px; }
+            .menu-section { padding: 0 25px 80px; }
+            .menu-grid { grid-template-columns: 1fr; }
+            .category-filter { padding: 20px 25px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="nav">
+    <a href="{{ url_for('home') }}" class="nav-logo">Old City <span>Restaurant</span></a>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('menu') }}">Menu</a></li>
+        <li><a href="{{ url_for('reservation') }}">Reservation</a></li>
+        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+    </ul>
+    <a href="{{ url_for('reservation') }}" class="nav-cta">Reserve Table</a>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+</nav>
+
+<!-- PAGE HEADER -->
+<section class="page-header">
+    <div class="page-label">Our Menu</div>
+    <h1 class="page-title">Culinary <span style="color:var(--gold)">Delights</span></h1>
+    <p class="page-desc">Discover our carefully curated selection of authentic Uzbek dishes, prepared with love and tradition.</p>
+</section>
+
+<!-- CATEGORY FILTER -->
+<div class="category-filter">
+    <button class="filter-btn active" onclick="filterMenu('all')">All</button>
+    {% for cat in categories %}
+    <button class="filter-btn" onclick="filterMenu('{{ cat.category }}')">{{ cat.category }}</button>
+    {% endfor %}
+</div>
+
+<!-- MENU SECTION -->
+<section class="menu-section">
+    <div class="menu-container">
+        {% set current_category = namespace(value='') %}
+        {% for item in items %}
+            {% if item.category != current_category.value %}
+                {% if current_category.value != '' %}</div>{% endif %}
+                <div class="menu-category" data-category="{{ item.category }}">
+                <h2 class="category-title">{{ item.category }}</h2>
+                <div class="menu-grid">
+                {% set current_category.value = item.category %}
+            {% endif %}
+            <div class="menu-card">
+                <div class="menu-card-img">
+                    <img src="{{ url_for('media_menu', id=item.id) if item.image_data else url_for('static', filename='images/' + item.image) }}" alt="{{ item.name }}" onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80'">
+                </div>
+                <div class="menu-card-body">
+                    <div class="menu-card-header">
+                        <h3>{{ item.name }}</h3>
+                        <span class="menu-card-price">${{ "%.2f"|format(item.price) }}</span>
+                    </div>
+                    <p>{{ item.description }}</p>
+                    {% if item.is_special %}<span class="menu-card-badge">Chef's Special</span>{% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        {% if items %}</div></div>{% endif %}
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-logo">Old City <span>Restaurant</span></div>
+    <p>© 2026 Old City Restaurant. All rights reserved.</p>
+    <div class="footer-links">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('menu') }}">Menu</a>
+        <a href="{{ url_for('reservation') }}">Reservation</a>
+        <a href="{{ url_for('admin_login') }}">Admin</a>
+    </div>
+</footer>
+
+<script>
+    function filterMenu(category) {
+        const categories = document.querySelectorAll('.menu-category');
+        const buttons = document.querySelectorAll('.filter-btn');
+
+        buttons.forEach(btn => {
+            btn.classList.toggle('active', 
+                (category === 'all' && btn.textContent === 'All') ||
+                btn.textContent === category
+            );
+        });
+
+        categories.forEach(cat => {
+            if (category === 'all' || cat.dataset.category === category) {
+                cat.style.display = 'block';
+            } else {
+                cat.style.display = 'none';
+            }
+        });
+    }
+
+    function toggleMobileMenu() {
+        const navLinks = document.getElementById('navLinks');
+        navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        navLinks.style.position = 'absolute';
+        navLinks.style.top = '70px';
+        navLinks.style.left = '0';
+        navLinks.style.right = '0';
+        navLinks.style.flexDirection = 'column';
+        navLinks.style.background = 'rgba(7,7,7,0.95)';
+        navLinks.style.padding = '20px';
+        navLinks.style.gap = '20px';
+    }
+</script>
+
+</body>
+</html>
