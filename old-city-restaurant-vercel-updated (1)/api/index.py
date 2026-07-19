@@ -12,7 +12,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'old_city_restaurant_secret_key_20
 
 # Google OAuth Client ID (create one at https://console.cloud.google.com/apis/credentials
 # and set it as an environment variable named GOOGLE_CLIENT_ID in your Vercel project settings)
-GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+GOOGLE_CLIENT_ID = os.environ.get('368495148067-l64usk4mkp9supcm8pj0qq0ftiaekbse.apps.googleusercontent.com', '')
 
 # Use /tmp for SQLite in serverless environment
 DATABASE = '/tmp/old_city.db'
