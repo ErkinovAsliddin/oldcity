@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe — {{ item.name }} — Old City Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #C9A84C;
+            --dark: #0D0D0D;
+            --darker: #070707;
+            --cream: #F5F0E8;
+            --warm-white: #FAF8F5;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #B85450;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--darker); color: var(--cream); }
+
+        .flash-messages { position: fixed; top: 30px; right: 30px; z-index: 9999; }
+        .flash-message { padding: 15px 25px; margin-bottom: 10px; border-radius: 4px; font-size: 0.9rem; font-weight: 500; animation: slideIn 0.5s ease; }
+        .flash-success { background: rgba(76, 175, 80, 0.9); color: white; }
+        .flash-error { background: rgba(184, 84, 80, 0.9); color: white; }
+        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .sidebar { position: fixed; left: 0; top: 0; width: 260px; height: 100vh; background: var(--dark); border-right: 1px solid rgba(201, 168, 76, 0.1); padding: 30px 0; z-index: 100; overflow-y: auto; }
+        .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--gold); text-align: center; margin-bottom: 40px; letter-spacing: 2px; padding: 0 30px; }
+        .sidebar-logo span { color: var(--cream); font-weight: 400; }
+        .sidebar-nav { list-style: none; padding: 0; }
+        .sidebar-nav li { margin: 5px 0; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 15px; padding: 15px 30px; color: rgba(245, 240, 232, 0.6); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; border-left: 3px solid transparent; }
+        .sidebar-nav a:hover, .sidebar-nav a.active { color: var(--gold); background: rgba(201, 168, 76, 0.05); border-left-color: var(--gold); }
+        .sidebar-nav i { width: 20px; text-align: center; }
+        .sidebar-footer { position: absolute; bottom: 30px; left: 0; right: 0; padding: 0 30px; }
+        .sidebar-footer a { display: block; padding: 12px; text-align: center; color: var(--cream); text-decoration: none; border: 1px solid rgba(201, 168, 76, 0.2); border-radius: 4px; font-size: 0.85rem; transition: all 0.3s; }
+        .sidebar-footer a:hover { background: var(--gold); color: var(--dark); border-color: var(--gold); }
+        .nav-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px; margin-left: auto; background: var(--danger); color: white; font-size: 0.65rem; font-weight: 700; border-radius: 10px; }
+
+        .main-content { margin-left: 260px; padding: 40px; max-width: 1000px; }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--gold); text-decoration: none; font-size: 0.85rem; margin-bottom: 20px; }
+        .back-link:hover { text-decoration: underline; }
+        .page-header h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--warm-white); margin-bottom: 6px; }
+        .page-header p { color: rgba(245,240,232,0.45); font-size: 0.85rem; margin-bottom: 30px; }
+
+        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+        .summary-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(201, 168, 76, 0.15); border-radius: 8px; padding: 24px; }
+        .summary-card .label { font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+        .summary-card .value { font-family: 'Playfair Display', serif; font-size: 1.7rem; color: var(--warm-white); }
+        .value.good { color: var(--success); }
+        .value.warn { color: var(--warning); }
+        .value.bad { color: var(--danger); }
+
+        .form-section { background: rgba(255,255,255,0.02); border: 1px solid rgba(201, 168, 76, 0.1); border-radius: 8px; padding: 25px; margin-bottom: 30px; }
+        .form-section h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--warm-white); margin-bottom: 18px; }
+        .form-grid { display: grid; grid-template-columns: 2fr 1fr auto; gap: 15px; align-items: end; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); }
+        .form-group input, .form-group select {
+            padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(201, 168, 76, 0.15);
+            color: var(--cream); font-family: 'Inter', sans-serif; font-size: 0.9rem; border-radius: 4px;
+        }
+        .btn-add { background: var(--gold); color: var(--dark); padding: 12px 25px; font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; border: none; cursor: pointer; border-radius: 4px; }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(201, 168, 76, 0.3); }
+
+        .table-container { background: rgba(255,255,255,0.02); border: 1px solid rgba(201, 168, 76, 0.1); border-radius: 8px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 16px 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); border-bottom: 1px solid rgba(201, 168, 76, 0.1); }
+        td { padding: 14px 20px; font-size: 0.9rem; color: rgba(245, 240, 232, 0.8); border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .btn-delete { padding: 6px 14px; background: rgba(184, 84, 80, 0.15); color: var(--danger); border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; text-decoration: none; }
+        .btn-delete:hover { background: var(--danger); color: white; }
+
+        @media (max-width: 1024px) { .sidebar { width: 200px; } .main-content { margin-left: 200px; } }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; padding: 20px; } .summary-grid, .form-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="flash-message flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<aside class="sidebar">
+    <div class="sidebar-logo">Old City <span>Admin</span></div>
+    <ul class="sidebar-nav">
+        <li><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+        <li><a href="{{ url_for('admin_menu') }}" class="active"><i class="fas fa-utensils"></i> Menu Items</a></li>
+        <li><a href="{{ url_for('admin_ingredients') }}"><i class="fas fa-carrot"></i> Ingredients</a></li>
+        <li><a href="{{ url_for('admin_tables') }}"><i class="fas fa-chair"></i> Tables</a></li>
+        <li><a href="{{ url_for('admin_reservations') }}"><i class="fas fa-calendar-check"></i> Reservations <span class="nav-badge" id="notifBadge" style="display:none;"></span></a></li>
+        <li><a href="{{ url_for('admin_staff') }}"><i class="fas fa-user-tie"></i> Staff</a></li>
+        <li><a href="{{ url_for('admin_reports') }}"><i class="fas fa-chart-pie"></i> Reports</a></li>
+        <li><a href="{{ url_for('admin_reviews') }}"><i class="fas fa-star"></i> Reviews</a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="{{ url_for('admin_logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+</aside>
+
+<main class="main-content">
+    <a href="{{ url_for('admin_menu') }}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Menu Items</a>
+    <div class="page-header">
+        <h1>{{ item.name }}</h1>
+        <p>Build the recipe below to see real food cost and profit margin for this dish.</p>
+    </div>
+
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="label">Selling Price</div>
+            <div class="value">${{ '%.2f'|format(item.price) }}</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">Food Cost</div>
+            <div class="value">${{ '%.2f'|format(food_cost) }}</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">Gross Margin</div>
+            {% if margin_pct is not none %}
+            <div class="value {{ 'good' if margin_pct >= 60 else ('warn' if margin_pct >= 30 else 'bad') }}">{{ margin_pct }}%</div>
+            {% else %}
+            <div class="value">-</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h3>Add Ingredient to Recipe</h3>
+        <form action="{{ url_for('admin_add_recipe_item', id=item.id) }}" method="POST">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Ingredient</label>
+                    <select name="ingredient_id" required>
+                        <option value="">Select ingredient</option>
+                        {% for ing in all_ingredients %}
+                        <option value="{{ ing.id }}">{{ ing.name }} (${{ '%.2f'|format(ing.cost_per_unit) }} / {{ ing.unit }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quantity per Serving</label>
+                    <input type="number" step="0.001" name="quantity" required placeholder="e.g., 0.25">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn-add">Add</button>
+                </div>
+            </div>
+        </form>
+        {% if not all_ingredients %}
+        <p style="margin-top:15px; font-size:0.85rem; color: rgba(245,240,232,0.4);">
+            No ingredients yet — <a href="{{ url_for('admin_ingredients') }}" style="color: var(--gold);">add some first</a>.
+        </p>
+        {% endif %}
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ingredient</th>
+                    <th>Quantity</th>
+                    <th>Unit Cost</th>
+                    <th>Line Cost</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for line in recipe_lines %}
+                <tr>
+                    <td><strong>{{ line.name }}</strong></td>
+                    <td>{{ line.quantity }} {{ line.unit }}</td>
+                    <td>${{ '%.2f'|format(line.cost_per_unit) }} / {{ line.unit }}</td>
+                    <td>${{ '%.2f'|format(line.line_cost) }}</td>
+                    <td><a href="{{ url_for('admin_delete_recipe_item', recipe_item_id=line.id) }}" class="btn-delete" onclick="return confirm('Remove this ingredient from the recipe?')">Remove</a></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" style="text-align:center; padding:40px; color:rgba(245,240,232,0.3);">No ingredients added to this recipe yet</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script>
+    function pollNotifications() {
+        fetch("{{ url_for('admin_notifications_count') }}")
+            .then(r => r.json())
+            .then(data => {
+                const badge = document.getElementById('notifBadge');
+                if (data.count > 0) { badge.textContent = data.count; badge.style.display = 'inline-flex'; }
+                else { badge.style.display = 'none'; }
+            })
+            .catch(() => {});
+    }
+    pollNotifications();
+    setInterval(pollNotifications, 20000);
+
+    setTimeout(() => {
+        document.querySelectorAll('.flash-message').forEach(msg => {
+            msg.style.transition = 'opacity 0.5s';
+            msg.style.opacity = '0';
+            setTimeout(() => msg.remove(), 500);
+        });
+    }, 5000);
+</script>
+
+</body>
+</html>

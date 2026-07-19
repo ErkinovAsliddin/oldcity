@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — Old City Restaurant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #E8D5A3;
+            --dark: #0D0D0D;
+            --darker: #070707;
+            --cream: #F5F0E8;
+            --warm-white: #FAF8F5;
+            --danger: #B85450;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--darker); color: var(--cream); }
+
+        .flash-messages { position: fixed; top: 100px; right: 30px; z-index: 9999; }
+        .flash-message { padding: 15px 25px; margin-bottom: 10px; border-radius: 4px; font-size: 0.9rem; font-weight: 500; animation: slideIn 0.5s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .flash-success { background: rgba(76, 175, 80, 0.9); color: white; }
+        .flash-error { background: rgba(184, 84, 80, 0.9); color: white; }
+        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .nav {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            padding: 20px 60px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(7, 7, 7, 0.95); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+        }
+        .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; text-decoration: none; }
+        .nav-logo span { color: var(--cream); font-weight: 400; }
+        .nav-links { display: flex; gap: 40px; list-style: none; }
+        .nav-links a { color: var(--cream); text-decoration: none; font-size: 0.85rem; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--gold); }
+        @media (max-width: 768px) { .nav { padding: 15px 25px; } .nav-links { display: none; } }
+
+        .page-header { padding: 150px 60px 60px; text-align: center; background: linear-gradient(180deg, var(--dark) 0%, var(--darker) 100%); }
+        .page-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .page-label::before, .page-label::after { content: ''; width: 40px; height: 1px; background: var(--gold); }
+        .page-title { font-family: 'Playfair Display', serif; font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 700; color: var(--warm-white); margin-bottom: 20px; }
+        .page-desc { font-size: 1.05rem; color: rgba(245, 240, 232, 0.6); max-width: 550px; margin: 0 auto; }
+
+        .login-section { padding: 20px 60px 140px; display: flex; justify-content: center; }
+        .login-card {
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(201, 168, 76, 0.15);
+            border-radius: 8px; padding: 60px 50px; max-width: 440px; width: 100%; text-align: center;
+        }
+        .login-icon { font-size: 2.2rem; color: var(--gold); margin-bottom: 20px; }
+        .login-card h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--warm-white); margin-bottom: 12px; }
+        .login-card > p { font-size: 0.95rem; color: rgba(245, 240, 232, 0.6); margin-bottom: 35px; line-height: 1.6; }
+        .g-btn-wrap { display: flex; justify-content: center; }
+        .login-warning { margin-top: 25px; font-size: 0.8rem; color: var(--danger); line-height: 1.5; }
+        .login-note { margin-top: 30px; font-size: 0.75rem; color: rgba(245, 240, 232, 0.35); letter-spacing: 0.5px; }
+
+        @media (max-width: 768px) {
+            .page-header { padding: 120px 25px 40px; }
+            .login-section { padding: 20px 25px 100px; }
+            .login-card { padding: 40px 25px; }
+        }
+    </style>
+</head>
+<body>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="flash-message flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<nav class="nav">
+    <a href="{{ url_for('home') }}" class="nav-logo">Old City <span>Restaurant</span></a>
+    <ul class="nav-links">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('menu') }}">Menu</a></li>
+        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+    </ul>
+</nav>
+
+<section class="page-header">
+    <div class="page-label">Members Area</div>
+    <h1 class="page-title">Sign In to <span style="color:var(--gold)">Reserve</span></h1>
+    <p class="page-desc">Sign in with your Google account to pick a table and reserve your exact time at Old City Restaurant.</p>
+</section>
+
+<section class="login-section">
+    <div class="login-card">
+        <div class="login-icon"><i class="fas fa-utensils"></i></div>
+        <h2>Welcome</h2>
+        <p>Reservations are linked to your Google account so we can confirm your booking and keep you updated.</p>
+
+        <div class="g-btn-wrap">
+            <div id="g_id_onload"
+                 data-client_id="{{ google_client_id }}"
+                 data-callback="handleGoogleCredential"
+                 data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-theme="filled_black"
+                 data-size="large"
+                 data-text="signin_with"
+                 data-shape="pill"
+                 data-logo_alignment="left">
+            </div>
+        </div>
+
+        {% if not google_client_id %}
+        <p class="login-warning">Google Sign-In isn't configured yet. The site owner needs to set a GOOGLE_CLIENT_ID environment variable in the Vercel project settings.</p>
+        {% endif %}
+
+        <p class="login-note">We only use your name and email to manage your reservation.</p>
+    </div>
+</section>
+
+<script>
+    function handleGoogleCredential(response) {
+        fetch("{{ url_for('auth_google') }}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                credential: response.credential,
+                next: {{ next_url|tojson }}
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.ok) {
+                window.location.href = data.redirect;
+            } else {
+                alert(data.error || "Sign in failed. Please try again.");
+            }
+        })
+        .catch(() => alert("Sign in failed. Please try again."));
+    }
+
+    setTimeout(() => {
+        document.querySelectorAll('.flash-message').forEach(msg => {
+            msg.style.transition = 'opacity 0.5s';
+            msg.style.opacity = '0';
+            setTimeout(() => msg.remove(), 500);
+        });
+    }, 5000);
+</script>
+
+</body>
+</html>
